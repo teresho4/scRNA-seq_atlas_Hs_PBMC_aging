@@ -1,0 +1,145 @@
+import pandas as pd
+
+my_file = open("../project_names", "r")
+content = my_file.read().replace('\n', '')
+PROJECT = content.split(",")
+
+my_file = open("sample_names", "r")
+content = my_file.read().replace('\n', '')
+SAMPLE = content.split(",")
+
+file = pd.read_csv('/storage1/fs1/martyomov/Active/NextGenImmunology/BSL3/'+ PROJECT[0] + '/align/GEX+FB/'+ SAMPLE[0] + '/outs/filtered_feature_bc_matrix/features.tsv.gz' , sep='\t')
+PATIENTS_POOL = file.tail(n=6).iloc[:,1].to_list()
+
+rule all:
+    input:
+        expand("output/{patients}/subset_barcodes.tsv", patients=PATIENTS_POOL),
+        expand("output/{patients}/patient_subset.bam", patients=PATIENTS_POOL),
+        expand("output/{patients}/clusters.tsv", patients=PATIENTS_POOL),
+        expand("output/{patients}/souporcell_merged_sorted_vcf.vcf", patients=PATIENTS_POOL),
+        expand("output/{patients}/vcf_table.tsv", patients=PATIENTS_POOL),
+        "output/only_unique_snp.tsv",
+        "output/only_unique_snp.vcf",
+        "output/header.txt",
+        "output/only_unique_snp_header.vcf",
+        "output/only_unique_snp_changed.vcf",
+        "output/sorc/clusters.tsv",
+        expand("../pictures/{samples}_umap_after_souporcell.png", samples=SAMPLE)
+
+rule barcode_creation:
+    output:
+        expand("output/{patients}/subset_barcodes.tsv", patients=PATIENTS_POOL)
+    conda: "env/r_barcode_creation.yaml"
+    shell:
+        "Rscript barcode_creation.R"
+
+rule subset_bam_pool:
+    input:
+        barcodes=lambda wildcards: expand("output/{{patients}}/subset_barcodes.tsv", patients=PATIENTS_POOL),
+        bam=expand("/storage1/fs1/martyomov/Active/NextGenImmunology/BSL3/{project}/align/GEX+FB/{samples}/outs/possorted_genome_bam.bam", samples=SAMPLE, project=PROJECT)
+    output:
+        expand("output/{{patients}}/patient_subset.bam")
+    shell:
+        "./subset-bam --bam {input.bam} --cell-barcodes {input.barcodes} --out-bam {output}"
+
+rule souporcell_step1:
+    input:
+        barcodes = lambda wildcards: expand("output/{{patients}}/subset_barcodes.tsv", patients=PATIENTS_POOL),
+        bam=lambda wildcards: expand("output/{{patients}}/patient_subset.bam", patients=PATIENTS_POOL)
+    params:
+        outdir= "{patients}"
+    output:
+        expand("output/{{patients}}/clusters.tsv"),
+        expand("output/{{patients}}/souporcell_merged_sorted_vcf.vcf")
+    shell:"""
+        bash -c '
+        source /opt/conda/etc/profile.d/conda.sh
+        conda activate /storage1/fs1/martyomov/Active/IndividualBackUps/mterekhova/conda/souporcellv2
+        export PATH=/storage1/fs1/martyomov/Active/IndividualBackUps/mterekhova/:$PATH
+        ~/souporcell/souporcell_pipeline.py -i  {input.bam} -b {input.barcodes} -f /storage1/fs1/martyomov/Active/References/10X/SC/Human/refdata-gex-GRCh38-2020-A/fasta/genome.fa -t 8 -o output/{params.outdir} -k 6
+        gunzip output/{params.outdir}/souporcell_merged_sorted_vcf.vcf.gz
+        conda deactivate'
+        """
+
+rule gatk:
+    input:
+        expand("output/{patients}/clusters.tsv", patients=PATIENTS_POOL),
+        samples=lambda wildcards: expand("output/{{patients}}/souporcell_merged_sorted_vcf.vcf", patients=PATIENTS_POOL)
+    output:
+        expand("output/{{patients}}/vcf_table.tsv")
+    conda: "env/gatk.yaml"
+    shell:
+        "gatk --java-options '-Xmx4G' VariantsToTable --variant {input.samples} --output {output} -F CHROM -F POS -GF GT"
+
+
+rule only_unique_snp:
+    input:
+        expand("output/{patients}/vcf_table.tsv", patients=PATIENTS_POOL)
+    output:
+        expand("output/only_unique_snp.tsv", project=PROJECT)
+    conda: "env/only_unique_snp.yaml"
+    shell:
+        "Rscript only_unique_snp.R"
+
+rule filter_vcf:
+    input:
+        rules.only_unique_snp.output
+    output:
+        expand("output/only_unique_snp.vcf")
+    shell:
+        "python filter_vcf.py"
+
+rule create_header:
+    input:
+        expand("souporcell_merged_sorted_vcf.vcf")
+    output:
+        expand("output/header.txt")
+    shell:
+        "head -n 257 {input} > {output}"
+
+rule add_header:
+    input:
+        header="output/header.txt",
+        vcf="output/only_unique_snp.vcf"
+    output:
+        "output/only_unique_snp_header.vcf"
+    shell:
+        'echo "$(cat {input.header} {input.vcf})" > {output}'
+
+rule change_header:
+    input:
+        "output/only_unique_snp_header.vcf"
+    output:
+        "output/only_unique_snp_changed.vcf"
+    conda: "env/picard.yaml"
+    shell:
+        "picard FixVcfHeader I={input} O={output}"
+
+rule souporcell_step2:
+    input:
+        vcf="output/only_unique_snp_changed.vcf",
+        bam=lambda wildcards: expand("../../{samples}/sorc/souporcell_minimap_tagged_sorted.bam", samples=SAMPLE),
+        barcodes=lambda wildcards: expand("../../{samples}/barcodes.tsv", samples=SAMPLE)
+    output:
+        expand("output/sorc/clusters.tsv")
+    shell:"""
+    bash -c '
+        source /opt/conda/etc/profile.d/conda.sh
+        conda activate /storage1/fs1/martyomov/Active/IndividualBackUps/mterekhova/conda/souporcellv2
+        export PATH=/storage1/fs1/martyomov/Active/IndividualBackUps/mterekhova/:$PATH
+        mkdir output/sorc
+        vartrix --mapq 30 -b {input.bam} -c {input.barcodes} --scoring-method coverage --threads 8 --ref-matrix output/sorc/ref.mtx --out-matrix output/sorc/alt.mtx -v {input.vcf} --fasta /storage1/fs1/martyomov/Active/References/10X/SC/Human/refdata-gex-GRCh38-2020-A/fasta/genome.fa --umi
+        ~/souporcell/souporcell/target/release/souporcell  -k 6 -a output/sorc/alt.mtx -r output/sorc/ref.mtx --restarts 100 -b {input.barcodes} --min_ref 10 --min_alt 10 > output/sorc/clusters_tmp.tsv
+        ~/souporcell/troublet/target/release/troublet --alts  output/sorc/alt.mtx --refs output/sorc/ref.mtx --clusters output/sorc/clusters_tmp.tsv >  output/sorc/clusters.tsv
+        ~/souporcell/consensus.py -c output/sorc/clusters.tsv  -a output/sorc/alt.mtx -r output/sorc/ref.mtx -p 2 --output_dir output/sorc/ --soup_out output/sorc/ambient_rna.txt --vcf_out output/sorc/cluster_genotypes.vcf --vcf {input.vcf}
+        conda deactivate'
+        """
+rule viz:
+    input:
+        expand("output/sorc/clusters.tsv"),
+    output:
+        expand("../pictures/{samples}_umap_after_souporcell.png", samples=SAMPLE)
+    conda: "env/viz.yaml"
+    shell:
+        "python viz.py"
+

@@ -1,0 +1,11 @@
+channels:
+ - defaults
+ - bioconda
+ - conda-forge
+dependencies:
+ - r-base=4.0.3
+ - r-r.utils
+ - r-seurat
+ - r-dplyr
+ - r-stringr
+ - r-tidyr

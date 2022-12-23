@@ -1,0 +1,9 @@
+channels:
+ - defaults
+ - conda-forge
+dependencies:
+ - pandas
+ - scikit-learn
+ - seaborn
+ - matplotlib
+ - umap-learn
