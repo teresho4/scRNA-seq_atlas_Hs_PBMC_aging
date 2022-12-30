@@ -1,7 +1,7 @@
 ## SINGLE-CELL ATLAS OF HUMAN BLOOD DURING HEALTHY AGING 
 
-In this repository you can find the scripts for the manuscript <br>
-Terekhova M., Swain A., Bohacova P. et al. Single-cell atlas of human blood during healthy aging.
+In this repository you can find scripts for the manuscript <br>
+Terekhova M., Swain A., Bohacova P. et al. <i>Single-cell atlas of human blood during healthy aging.</i>
 
 <table style="width: 100%" bordercolor="#ffffff">
     <colgroup>
