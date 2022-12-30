@@ -2,7 +2,7 @@
 
 In this repository you can find the scripts for the manuscrpt Terekhova M., Swain A., Bohacova P. et al. Single-cell atlas of human blood during healthy aging.
 
-<table style="width: 100%">
+<table style="width: 100%" bordercolor="#ffffff">
     <colgroup>
        <col span="1" style="width: 70%;">
        <col span="1" style="width: 30%;">
@@ -13,7 +13,7 @@ In this repository you can find the scripts for the manuscrpt Terekhova M., Swai
     <td>
     <b>Demultiplexing</b> - folder with Snakemake pipeline for demultiplexing. <br> 
         <br> 
-     <b>Seurat_GEX_HTO_PBMC_subpopulations.R</b> - File with Seurat pipelines to reproduce <br>  the single-cell processing for major PBMC subpopulations.
+     <b>Seurat_GEX_HTO_PBMC_subpopulations.R</b> - File with Seurat pipelines <br> to reproduce the single-cell processing for major PBMC subpopulations.
 </td>
  </tr>
     </tbody>
