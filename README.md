@@ -3,7 +3,13 @@
 In this repository you can find scripts for the manuscript <br>
 Terekhova M., Swain A., Bohacova P. et al. <i>Single-cell atlas of human blood during healthy aging.</i>
 
-<table style="border-collapse: collapse; border: none;">
+<style>
+td, th {
+   border: none!important;
+}
+</style>
+
+<table>
     <colgroup>
        <col span="1" style="width: 70%;">
        <col span="1" style="width: 30%;">
