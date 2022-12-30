@@ -4,11 +4,9 @@ In this repository you can find the scripts for the manuscrpt Terekhova M., Swai
 
 <table style="width:100%">
  <tr>
-    <td><b style="font-size:30px">Title</b></td>
-    <td><b style="font-size:30px">Title 2</b></td>
- </tr>
- <tr>
-    <td>Lorem ipsum ...</td>
-    <td>Lorem ipsum ...</td>
+    <td><img src="https://user-images.githubusercontent.com/55485726/209450705-139065bc-71ca-4055-90e8-a54c30a3b2a8.png" width="300" height="300"></td>
+    <td>Demultiplexing - folder with Snakemake pipeline for demultiplexing.
+Seurat_GEX_HTO_PBMC_subpopulations.R - Seurat pipelines to reproduce the single-cell processing for major PBMC subpopulations.
+</td>
  </tr>
 </table>
