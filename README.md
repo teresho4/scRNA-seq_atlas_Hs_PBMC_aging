@@ -1,4 +1,23 @@
 # SINGLE-CELL ATLAS OF HUMAN BLOOD DURING HEALTHY AGING 
+#left {
+	margin: 10px 0 15px 20px;
+	text-align: left;
+	float: left;
+	z-index:-10;
+	width:48%;
+	font-size: 0.85em;
+	line-height: 1.5; 
+}
+
+#right {
+	margin: 10px 0 15px 0;
+	float: right;
+	text-align: left;
+	z-index:-10;
+	width:48%;
+	font-size: 0.85em;
+	line-height: 1.5; 
+}
 
 In this repository you can find the scripts for the manuscrpt Terekhova M., Swain A., Bohacova P. et al. Single-cell atlas of human blood during healthy aging.
 
