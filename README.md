@@ -15,7 +15,7 @@ Terekhova M., Swain A., Bohacova P. et al. <i>Single-cell atlas of human blood d
     <td>
     <b>Demultiplexing</b> - folder with Snakemake pipeline for demultiplexing. <br> 
         <br> 
-     <b>Seurat_GEX_HTO_PBMC_subpopulations.R</b> - File with Seurat <br> pipelines to reproduce the single-cell processing for major PBMC subpopulations.
+     <b>Seurat_GEX_HTO_PBMC_subpopulations.R</b> - File with Seurat <br> pipelines to reproduce the single-cell processing for major PBMC <br> subpopulations.
 </td>
  </tr>
     </tbody>
