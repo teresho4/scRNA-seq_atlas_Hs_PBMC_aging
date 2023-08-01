@@ -126,3 +126,39 @@ data <- RunHarmony(object = data, group.by.vars = c("Batch"), assay.use = "RNA",
 data <- RunUMAP(data, dims = 1:30, reduction = "harmony")
 data <- FindNeighbors(data, dims = 1:30, reduction = "harmony", k.param = 15)
 data <- FindClusters(data, resolution = 0.3)
+
+### Progenitor cells ###
+
+norm_counts <- readRDS('gex_hto_data/progenitor_cells/progenitor_cells_rna.rds')
+meta <- read.csv('gex_hto_data/progenitor_cells/progenitor_cells_metadata.csv', row.names = 'X')
+norm_counts_hto <-  readRDS('gex_hto_data/progenitor_cells/progenitor_cells_hto.rds')
+data <- CreateSeuratObject(counts = norm_counts, meta.data = meta)
+data@assays$RNA@data <- norm_counts
+data[['HTO']] <-  CreateAssayObject(norm_counts_hto)
+data@assays$HTO@data <- norm_counts_hto
+data <- FindVariableFeatures(object = data, selection.method = 'mean.var.plot', mean.cutoff = c(0.01, Inf), dispersion.cutoff = c(1.6, Inf))
+data@assays$RNA@var.features <- data@assays$RNA@var.features[!grepl("^TRA|^TRB|^IGH|^IGK|^IGL", data@assays$RNA@var.features)]
+data <- ScaleData(object = data, features = VariableFeatures(object = data), vars.to.regress = c("nCount_RNA", "percent.mt"))
+data <- RunPCA(object = data)
+data <- RunHarmony(object = data, group.by.vars = c("Batch"), assay.use = "RNA", max.iter.harmony = 20)
+data <- RunUMAP(data, dims = 1:10, reduction = "harmony")
+data <- FindNeighbors(data, dims = 1:10, reduction = "harmony")
+data <- FindClusters(data, resolution = 0.3)
+
+### MAIT cells ###
+
+norm_counts <- readRDS('gex_hto_data/mait_cells/mait_cells_rna.rds')
+meta <- read.csv('gex_hto_data/mait_cells/mait_cells_metadata.csv', row.names = 'X')
+norm_counts_hto <-  readRDS('gex_hto_data/mait_cells/mait_cells_hto.rds')
+data <- CreateSeuratObject(counts = norm_counts, meta.data = meta)
+data@assays$RNA@data <- norm_counts
+data[['HTO']] <-  CreateAssayObject(norm_counts_hto)
+data@assays$HTO@data <- norm_counts_hto
+data <- FindVariableFeatures(object = data, selection.method = 'mean.var.plot', mean.cutoff = c(0.01, Inf), dispersion.cutoff = c(0.85, Inf))
+data@assays$RNA@var.features <- data@assays$RNA@var.features[!grepl("^TRA|^TRB|^IGH|^IGK|^IGL", data@assays$RNA@var.features)]
+data <- ScaleData(object = data, features = VariableFeatures(object = data), vars.to.regress = c("nCount_RNA", "percent.mt"))
+data <- RunPCA(object = data)
+data <- RunHarmony(object = data, group.by.vars = c("Batch"), assay.use = "RNA", max.iter.harmony = 20)
+data <- RunUMAP(data, dims = 1:20, reduction = "harmony")
+data <- FindNeighbors(data, dims = 1:20, reduction = "harmony")
+data <- FindClusters(data, resolution = 0.3)
