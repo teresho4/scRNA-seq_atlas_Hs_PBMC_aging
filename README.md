@@ -11,8 +11,7 @@ Terekhova M., Swain A., Bohacova P. et al. <i>Single-cell atlas of human blood d
     </colgroup>
     <tbody>
        <tr style="height:300px">
-    <td><img src="![mterex_old_and_young_immune_cells_cartoon_cels_watercolors_scie_c0af1d0a-8375-465f-a686-a6fd1de5a873](https://github.com/teresho4/scRNA-seq_atlas_Hs_PBMC_aging/assets/55485726/b7c6941c-e5ac-4608-8526-3dfd4b3e6b4b)
-" width="300" height="300"></td>
+    <td><img src="![mterex_old_and_young_immune_cells_cartoon_cels_watercolors_scie_c0af1d0a-8375-465f-a686-a6fd1de5a00873](https://github.com/teresho4/scRNA-seq_atlas_Hs_PBMC_aging/assets/55485726/45e53db8-1df4-4a45-b1b3-ecc2cef67cee)" width="300" height="300"></td>
     <td>
     <b>Demultiplexing_pipeline</b> - folder with Snakemake pipeline for <br> demultiplexing. <br> 
         <br> 
