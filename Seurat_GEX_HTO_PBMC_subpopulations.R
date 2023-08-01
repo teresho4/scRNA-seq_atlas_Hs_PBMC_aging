@@ -154,11 +154,11 @@ data <- CreateSeuratObject(counts = norm_counts, meta.data = meta)
 data@assays$RNA@data <- norm_counts
 data[['HTO']] <-  CreateAssayObject(norm_counts_hto)
 data@assays$HTO@data <- norm_counts_hto
-data <- FindVariableFeatures(object = data, selection.method = 'mean.var.plot', mean.cutoff = c(0.01, Inf), dispersion.cutoff = c(0.85, Inf))
+data <- FindVariableFeatures(object = data, selection.method = 'mean.var.plot', mean.cutoff = c(0.01, Inf), dispersion.cutoff = c(0.91, Inf))
 data@assays$RNA@var.features <- data@assays$RNA@var.features[!grepl("^TRA|^TRB|^IGH|^IGK|^IGL", data@assays$RNA@var.features)]
 data <- ScaleData(object = data, features = VariableFeatures(object = data), vars.to.regress = c("nCount_RNA", "percent.mt"))
 data <- RunPCA(object = data)
 data <- RunHarmony(object = data, group.by.vars = c("Batch"), assay.use = "RNA", max.iter.harmony = 20)
-data <- RunUMAP(data, dims = 1:20, reduction = "harmony")
-data <- FindNeighbors(data, dims = 1:20, reduction = "harmony")
+data <- RunUMAP(data, dims = 1:15, reduction = "harmony")
+data <- FindNeighbors(data, dims = 1:15, reduction = "harmony")
 data <- FindClusters(data, resolution = 0.3)
