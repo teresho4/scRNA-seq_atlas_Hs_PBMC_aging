@@ -1,7 +1,7 @@
 ## SINGLE-CELL ATLAS OF HUMAN BLOOD DURING HEALTHY AGING 
 
 In this repository you can find scripts for the manuscript <br>
-Terekhova M., Swain A., Bohacova P. et al. <i>Single-cell atlas of human blood during healthy aging.</i>
+Terekhova M., Swain A., Bohacova P. et al. <i> Single-cell atlas of healthy human blood unveils age-related loss of NKG2C+ CD8 memory T cells and accumulation of type 2 memory CD4/CD8 T cells </i>
 
 
 <table>
